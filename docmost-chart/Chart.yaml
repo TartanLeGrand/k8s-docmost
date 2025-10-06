@@ -1,0 +1,16 @@
+apiVersion: v2
+name: docmost
+description: A Helm chart for Docmost - An open-source collaborative wiki and documentation software
+type: application
+version: 1.0.0
+appVersion: "0.20.4"
+keywords:
+  - docmost
+  - wiki
+  - documentation
+  - collaboration
+home: https://docmost.com
+sources:
+  - https://github.com/docmost/docmost
+maintainers:
+  - name: TartanLeGrand

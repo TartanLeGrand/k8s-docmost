@@ -1,0 +1,18 @@
+{{- if .Values.configMap.create -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "docmost.configMapName" . }}
+  labels:
+    {{- include "docmost.labels" . | nindent 4 }}
+data:
+  APP_URL: {{ .Values.config.appUrl | quote }}
+  STORAGE_DRIVER: {{ .Values.config.storage.driver | quote }}
+  FILE_UPLOAD_SIZE_LIMIT: {{ .Values.config.storage.fileUploadSizeLimit | quote }}
+  {{- if eq .Values.config.storage.driver "s3" }}
+  AWS_S3_REGION: {{ .Values.config.s3.region | quote }}
+  AWS_S3_BUCKET: {{ .Values.config.s3.bucket | quote }}
+  AWS_S3_ENDPOINT: {{ .Values.config.s3.endpoint | quote }}
+  AWS_S3_URL: {{ .Values.config.s3.url | quote }}
+  {{- end }}
+{{- end }}
