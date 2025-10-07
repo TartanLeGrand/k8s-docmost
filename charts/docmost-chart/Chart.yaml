@@ -17,5 +17,5 @@ maintainers:
 dependencies:
   - name: redis
     repository: https://charts.pascaliske.dev
-    version: 2.1.0
+    version: "2.1.0"
     condition: redis.enabled
