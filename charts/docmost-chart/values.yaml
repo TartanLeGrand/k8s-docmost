@@ -156,9 +156,6 @@ secrets:
   # Format: postgresql://username:password@host:port/database?schema=public
   databaseUrl: "postgresql://docmost:CHANGE_ME@postgres:5432/docmost?schema=public"
 
-  # Redis connection URL
-  redisUrl: "redis://redis:6379"
-
   # AWS credentials (when using S3 storage)
   aws:
     accessKeyId: "000000000000000001"
@@ -183,3 +180,6 @@ configMap:
 secret:
   create: true
   name: ""
+
+redis:
+	enabled: true
