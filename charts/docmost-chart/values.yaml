@@ -133,12 +133,12 @@ lifecycle:
 config:
   # Application URL - must match your domain
   appUrl: "https://docmost.local"
-  
+
   # Storage configuration
   storage:
     driver: "s3"  # Options: s3, local
     fileUploadSizeLimit: "100mb"
-  
+
   # S3 configuration (when storage.driver is "s3")
   s3:
     region: "us-west-1"
@@ -151,19 +151,19 @@ secrets:
   # Application secret - minimum 32 characters
   # Generate with: openssl rand -hex 32
   appSecret: "random_app_secret_min_32_chars_34e85903f193bd0da5a"
-  
+
   # Database connection URL
   # Format: postgresql://username:password@host:port/database?schema=public
   databaseUrl: "postgresql://docmost:CHANGE_ME@postgres:5432/docmost?schema=public"
-  
+
   # Redis connection URL
   redisUrl: "redis://redis:6379"
-  
+
   # AWS credentials (when using S3 storage)
   aws:
     accessKeyId: "000000000000000001"
     secretAccessKey: "K000000000000000000000"
-  
+
   # Mail configuration
   mail:
     driver: "smtp"  # Options: smtp
