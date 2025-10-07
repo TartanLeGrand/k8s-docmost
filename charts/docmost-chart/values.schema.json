@@ -119,10 +119,10 @@
         },
         "redisUrl": {
           "type": "string",
-          "description": "Redis connection URL"
+          "description": "Redis connection URL (optional when redis.enabled is true)"
         }
       },
-      "required": ["appSecret", "databaseUrl", "redisUrl"]
+      "required": ["appSecret", "databaseUrl"]
     },
     "autoscaling": {
       "type": "object",

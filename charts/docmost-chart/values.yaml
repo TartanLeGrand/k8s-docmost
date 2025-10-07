@@ -182,4 +182,11 @@ secret:
   name: ""
 
 redis:
-	enabled: true
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    service:
+      ports:
+        redis: 6379

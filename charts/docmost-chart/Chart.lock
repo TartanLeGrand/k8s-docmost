@@ -1,6 +1,6 @@
 dependencies:
 - name: redis
-  repository: https://charts.pascaliske.dev
-  version: 2.1.0
-digest: sha256:551299841959f8c342765fef8b44d22a1e51601c76aef12359544e5f542bb04f
-generated: "2025-10-07T18:24:19.377339393+02:00"
+  repository: https://charts.bitnami.com/bitnami
+  version: 20.5.2
+digest: sha256:PLACEHOLDER_WILL_BE_UPDATED_ON_BUILD
+generated: "2025-01-07T16:41:48Z"

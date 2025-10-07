@@ -82,3 +82,20 @@ Create the name of the secret to use
 {{- default "docmost-secrets" .Values.secret.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Create the Redis URL from the umbrella chart configuration or external Redis
+*/}}
+{{- define "docmost.redisUrl" -}}
+{{- if .Values.redis.enabled -}}
+{{- $redisHost := printf "%s-redis-master" (include "docmost.fullname" .) -}}
+{{- $redisPort := .Values.redis.master.service.ports.redis | default 6379 -}}
+{{- if .Values.redis.auth.enabled -}}
+redis://{{ .Values.redis.auth.password }}@{{ $redisHost }}:{{ $redisPort }}
+{{- else -}}
+redis://{{ $redisHost }}:{{ $redisPort }}
+{{- end -}}
+{{- else -}}
+{{- .Values.secrets.redisUrl | required "secrets.redisUrl is required when redis.enabled is false" -}}
+{{- end -}}
+{{- end -}}
