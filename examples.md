@@ -16,10 +16,16 @@ ingress:
 
 replicaCount: 1
 
+# Use built-in Redis for development
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+
 secrets:
   appSecret: "dev-secret-min-32-chars-1234567890abcdef"
   databaseUrl: "postgresql://docmost:docmost@postgres:5432/docmost?schema=public"
-  redisUrl: "redis://redis:6379"
 ```
 
 Install with:
@@ -68,10 +74,16 @@ resources:
     cpu: 500m
     memory: 512Mi
 
+# Use built-in Redis with auth for production
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: ""  # Generate with: openssl rand -base64 32
+
 secrets:
   appSecret: ""  # Generate with: openssl rand -hex 32
   databaseUrl: "postgresql://docmost:CHANGE_ME@postgres-host:5432/docmost?schema=public"
-  redisUrl: "redis://redis-host:6379"
   aws:
     accessKeyId: "YOUR_AWS_ACCESS_KEY"
     secretAccessKey: "YOUR_AWS_SECRET_KEY"
@@ -123,10 +135,15 @@ autoscaling:
   maxReplicas: 10
   targetCPUUtilizationPercentage: 70
 
+# Use built-in Redis for Traefik example
+redis:
+  enabled: true
+  auth:
+    enabled: false
+
 secrets:
   appSecret: ""  # Generate with: openssl rand -hex 32
   databaseUrl: "postgresql://docmost:CHANGE_ME@postgres-host:5432/docmost?schema=public"
-  redisUrl: "redis://redis-host:6379"
 ```
 
 Install with:

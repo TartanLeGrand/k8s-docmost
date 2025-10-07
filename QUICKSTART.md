@@ -44,13 +44,19 @@ echo "postgresql://docmost:docmost123@postgres-postgresql:5432/docmost?schema=pu
 
 ## Step 2: Prepare Redis
 
-### Option A: Use existing external Redis
+The chart includes a built-in Redis deployment by default. You can use it or provide an external Redis instance.
+
+### Option A: Use Built-in Redis (Recommended for Quick Start)
+
+No additional setup required! Redis will be deployed automatically with the chart.
+
+### Option B: Use existing external Redis
 If you have an existing Redis instance, note down:
 - Redis host
 - Redis port
 - (Optional) Password
 
-### Option B: Deploy Redis in Kubernetes
+### Option C: Deploy External Redis in Kubernetes
 
 ```bash
 # Install Redis
@@ -58,9 +64,11 @@ helm install redis bitnami/redis \
   --namespace docmost \
   --set auth.enabled=false
 
-# Get the connection string
+# Get the connection string (for reference)
 echo "redis://redis-master:6379"
 ```
+
+**Note:** If using external Redis, you'll need to set `redis.enabled=false` and provide `secrets.redisUrl` in your values file.
 
 ## Step 3: Create Your Values File
 
@@ -95,13 +103,21 @@ secrets:
   # Update with your database connection
   databaseUrl: "postgresql://docmost:docmost123@postgres-postgresql:5432/docmost?schema=public"
   
-  # Update with your Redis connection
-  redisUrl: "redis://redis-master:6379"
+  # Redis URL is automatically computed from the built-in Redis
+  # If using external Redis, uncomment below and disable built-in Redis
+  # redisUrl: "redis://redis-master:6379"
   
   # If using S3 storage, update these
   aws:
     accessKeyId: "your-access-key"
     secretAccessKey: "your-secret-key"
+
+# Use built-in Redis (default - no configuration needed)
+# To use external Redis instead:
+# redis:
+#   enabled: false
+# secrets:
+#   redisUrl: "redis://external-redis:6379"
 ```
 
 ### Generate Secure Secret
@@ -118,6 +134,9 @@ Copy the output and update the `secrets.appSecret` value in your `my-values.yaml
 ```bash
 # Create namespace if not already created
 kubectl create namespace docmost
+
+# Build dependencies (downloads Redis chart)
+helm dependency build ./docmost-chart
 
 # Install the chart
 helm install docmost ./docmost-chart \
@@ -182,7 +201,9 @@ kubectl logs -l app.kubernetes.io/name=docmost -n docmost --tail=100
 - Ensure the database exists and credentials are correct
 
 **Redis connection failed:**
-- Verify your `redisUrl` is correct
+- If using built-in Redis: Check if Redis pod is running: `kubectl get pods -l app.kubernetes.io/name=redis -n docmost`
+- If using built-in Redis: Check Redis logs: `kubectl logs -l app.kubernetes.io/name=redis -n docmost`
+- If using external Redis: Verify `redis.enabled=false` and `secrets.redisUrl` is correct
 - Check if Redis is accessible from the pods
 
 **Ingress not working:**

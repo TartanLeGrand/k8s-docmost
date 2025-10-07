@@ -4,6 +4,7 @@ This Helm chart deploys [Docmost](https://docmost.com), an open-source collabora
 
 ## Features
 
+- Built-in Redis deployment (or use external Redis)
 - Configurable Kubernetes Ingress (supports any ingress controller)
 - Flexible storage options (S3 or local)
 - Configurable replica count and autoscaling
@@ -16,7 +17,7 @@ This Helm chart deploys [Docmost](https://docmost.com), an open-source collabora
 - Kubernetes 1.19+
 - Helm 3.0+
 - A PostgreSQL database
-- A Redis instance
+- Redis (deployed automatically by default, or use external)
 - (Optional) An S3-compatible storage service
 
 ## Installing the Chart
@@ -27,9 +28,12 @@ This Helm chart deploys [Docmost](https://docmost.com), an open-source collabora
 # Create namespace
 kubectl create namespace docmost
 
-# Install the chart
+# Install the chart with Redis dependency
+helm dependency build ./docmost-chart
 helm install docmost ./docmost-chart -n docmost
 ```
+
+Note: This will deploy Docmost with a built-in Redis instance. See below for using an external Redis.
 
 ### Installation with Custom Values
 
@@ -58,7 +62,21 @@ ingress:
 secrets:
   appSecret: "your-secure-random-32-character-secret-here"
   databaseUrl: "postgresql://docmost:password@postgres:5432/docmost?schema=public"
-  redisUrl: "redis://redis:6379"
+  # redisUrl is automatically computed from the redis subchart when redis.enabled is true
+  # If using external Redis, set redis.enabled=false and provide redisUrl
+
+# Use built-in Redis (default)
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+
+# Or use external Redis
+# redis:
+#   enabled: false
+# secrets:
+#   redisUrl: "redis://external-redis:6379"
 
 replicaCount: 3
 
@@ -139,7 +157,7 @@ The following table lists the configurable parameters of the Docmost chart and t
 |-----------|-------------|---------|
 | `secrets.appSecret` | Application secret (min 32 chars) | (example value) |
 | `secrets.databaseUrl` | PostgreSQL connection URL | (example value) |
-| `secrets.redisUrl` | Redis connection URL | (example value) |
+| `secrets.redisUrl` | Redis connection URL (optional when redis.enabled=true) | (computed from redis subchart) |
 | `secrets.aws.accessKeyId` | AWS access key ID | (example value) |
 | `secrets.aws.secretAccessKey` | AWS secret access key | (example value) |
 | `secrets.mail.driver` | Mail driver | `smtp` |
@@ -149,6 +167,20 @@ The following table lists the configurable parameters of the Docmost chart and t
 | `secrets.mail.smtp.password` | SMTP password | (example value) |
 | `secrets.mail.smtp.secure` | Use TLS | `false` |
 | `secrets.mail.fromAddress` | From email address | `hello@example.com` |
+
+### Redis Parameters
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `redis.enabled` | Enable built-in Redis deployment | `true` |
+| `redis.architecture` | Redis architecture (standalone or replication) | `standalone` |
+| `redis.auth.enabled` | Enable Redis authentication | `false` |
+| `redis.auth.password` | Redis password (when auth.enabled=true) | `""` |
+| `redis.master.service.ports.redis` | Redis port | `6379` |
+
+**Note:** When `redis.enabled` is `true`, the Redis URL is automatically computed from the subchart configuration. When `redis.enabled` is `false`, you must provide `secrets.redisUrl`.
+
+For advanced Redis configuration, refer to the [Bitnami Redis Chart documentation](https://github.com/bitnami/charts/tree/main/bitnami/redis).
 
 ### Resource Parameters
 
@@ -169,6 +201,38 @@ The following table lists the configurable parameters of the Docmost chart and t
 | `autoscaling.targetCPUUtilizationPercentage` | Target CPU utilization | `80` |
 
 ## Examples
+
+### Using Built-in Redis (Default)
+
+```yaml
+# Redis is deployed automatically
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+```
+
+### Using External Redis
+
+```yaml
+# Disable built-in Redis and provide external URL
+redis:
+  enabled: false
+
+secrets:
+  redisUrl: "redis://my-external-redis:6379"
+```
+
+### Using Redis with Authentication
+
+```yaml
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: "your-secure-password"
+```
 
 ### Using with NGINX Ingress Controller
 
@@ -236,7 +300,7 @@ autoscaling:
    - Generate a secure `secrets.appSecret` using: `openssl rand -hex 32`
    - Use external secrets management (e.g., External Secrets Operator, Sealed Secrets)
    - Enable TLS on your ingress
-   - Use strong database and Redis passwords
+   - Use strong database and Redis passwords (enable `redis.auth.enabled` for production)
 
 2. **Resources:**
    - Set appropriate resource limits and requests
@@ -245,7 +309,8 @@ autoscaling:
 3. **High Availability:**
    - Use at least 2 replicas
    - Configure Pod Disruption Budgets
-   - Use external PostgreSQL and Redis services with high availability
+   - Use external PostgreSQL with high availability
+   - For Redis HA, disable built-in Redis and use an external Redis cluster or set `redis.architecture: replication`
 
 4. **Storage:**
    - For production, use S3 or another object storage service
@@ -286,8 +351,10 @@ kubectl port-forward svc/docmost 8080:3000 -n docmost
    - Check if the database schema is initialized
 
 2. **Redis Connection Issues:**
-   - Verify the `secrets.redisUrl` is correct
-   - Ensure Redis is accessible from the cluster
+   - If using built-in Redis: Ensure `redis.enabled` is `true` and the redis pods are running
+   - If using external Redis: Verify `redis.enabled` is `false` and `secrets.redisUrl` is correct
+   - Check Redis pod logs: `kubectl logs -l app.kubernetes.io/name=redis -n docmost`
+   - Test Redis connection: `kubectl exec -it <docmost-pod> -n docmost -- redis-cli -h <redis-host> ping`
 
 3. **Ingress Not Working:**
    - Verify your ingress controller is installed
