@@ -19,9 +19,6 @@ replicaCount: 1
 # Use built-in Redis for development
 redis:
   enabled: true
-  architecture: standalone
-  auth:
-    enabled: false
 
 secrets:
   appSecret: "dev-secret-min-32-chars-1234567890abcdef"
@@ -77,9 +74,7 @@ resources:
 # Use built-in Redis with auth for production
 redis:
   enabled: true
-  auth:
-    enabled: true
-    password: ""  # Generate with: openssl rand -base64 32
+  # For authentication, refer to pascaliske Redis chart documentation
 
 secrets:
   appSecret: ""  # Generate with: openssl rand -hex 32
@@ -138,8 +133,6 @@ autoscaling:
 # Use built-in Redis for Traefik example
 redis:
   enabled: true
-  auth:
-    enabled: false
 
 secrets:
   appSecret: ""  # Generate with: openssl rand -hex 32

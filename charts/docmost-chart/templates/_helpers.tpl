@@ -88,13 +88,9 @@ Create the Redis URL from the umbrella chart configuration or external Redis
 */}}
 {{- define "docmost.redisUrl" -}}
 {{- if .Values.redis.enabled -}}
-{{- $redisHost := printf "%s-redis-master" (include "docmost.fullname" .) -}}
-{{- $redisPort := .Values.redis.master.service.ports.redis | default 6379 -}}
-{{- if .Values.redis.auth.enabled -}}
-redis://{{ .Values.redis.auth.password }}@{{ $redisHost }}:{{ $redisPort }}
-{{- else -}}
+{{- $redisHost := printf "%s-redis" (include "docmost.fullname" .) -}}
+{{- $redisPort := 6379 -}}
 redis://{{ $redisHost }}:{{ $redisPort }}
-{{- end -}}
 {{- else -}}
 {{- .Values.secrets.redisUrl | required "secrets.redisUrl is required when redis.enabled is false" -}}
 {{- end -}}

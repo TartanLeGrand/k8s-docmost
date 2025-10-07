@@ -16,6 +16,6 @@ maintainers:
   - name: TartanLeGrand
 dependencies:
   - name: redis
-    repository: https://charts.bitnami.com/bitnami
-    version: 20.5.2
+    repository: https://charts.pascaliske.dev
+    version: 2.1.0
     condition: redis.enabled

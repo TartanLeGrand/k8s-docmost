@@ -173,14 +173,10 @@ The following table lists the configurable parameters of the Docmost chart and t
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `redis.enabled` | Enable built-in Redis deployment | `true` |
-| `redis.architecture` | Redis architecture (standalone or replication) | `standalone` |
-| `redis.auth.enabled` | Enable Redis authentication | `false` |
-| `redis.auth.password` | Redis password (when auth.enabled=true) | `""` |
-| `redis.master.service.ports.redis` | Redis port | `6379` |
 
 **Note:** When `redis.enabled` is `true`, the Redis URL is automatically computed from the subchart configuration. When `redis.enabled` is `false`, you must provide `secrets.redisUrl`.
 
-For advanced Redis configuration, refer to the [Bitnami Redis Chart documentation](https://github.com/bitnami/charts/tree/main/bitnami/redis).
+For advanced Redis configuration, refer to the [pascaliske Redis Chart documentation](https://charts.pascaliske.dev).
 
 ### Resource Parameters
 
@@ -208,9 +204,6 @@ For advanced Redis configuration, refer to the [Bitnami Redis Chart documentatio
 # Redis is deployed automatically
 redis:
   enabled: true
-  architecture: standalone
-  auth:
-    enabled: false
 ```
 
 ### Using External Redis
@@ -229,9 +222,7 @@ secrets:
 ```yaml
 redis:
   enabled: true
-  auth:
-    enabled: true
-    password: "your-secure-password"
+  # For authentication configuration, refer to pascaliske Redis chart documentation
 ```
 
 ### Using with NGINX Ingress Controller
@@ -300,7 +291,7 @@ autoscaling:
    - Generate a secure `secrets.appSecret` using: `openssl rand -hex 32`
    - Use external secrets management (e.g., External Secrets Operator, Sealed Secrets)
    - Enable TLS on your ingress
-   - Use strong database and Redis passwords (enable `redis.auth.enabled` for production)
+   - Use strong database passwords
 
 2. **Resources:**
    - Set appropriate resource limits and requests
@@ -310,7 +301,7 @@ autoscaling:
    - Use at least 2 replicas
    - Configure Pod Disruption Budgets
    - Use external PostgreSQL with high availability
-   - For Redis HA, disable built-in Redis and use an external Redis cluster or set `redis.architecture: replication`
+   - For Redis HA, disable built-in Redis and use an external Redis cluster
 
 4. **Storage:**
    - For production, use S3 or another object storage service

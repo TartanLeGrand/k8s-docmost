@@ -59,13 +59,13 @@ If you have an existing Redis instance, note down:
 ### Option C: Deploy External Redis in Kubernetes
 
 ```bash
-# Install Redis
-helm install redis bitnami/redis \
-  --namespace docmost \
-  --set auth.enabled=false
+# Install Redis using pascaliske chart
+helm repo add pascaliske https://charts.pascaliske.dev
+helm install redis pascaliske/redis \
+  --namespace docmost
 
 # Get the connection string (for reference)
-echo "redis://redis-master:6379"
+echo "redis://redis:6379"
 ```
 
 **Note:** If using external Redis, you'll need to set `redis.enabled=false` and provide `secrets.redisUrl` in your values file.
