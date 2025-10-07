@@ -14,3 +14,7 @@ sources:
   - https://github.com/docmost/docmost
 maintainers:
   - name: TartanLeGrand
+dependencies:
+- name: redis
+  repository: https://charts.pascaliske.dev
+  version: 2.1.0
