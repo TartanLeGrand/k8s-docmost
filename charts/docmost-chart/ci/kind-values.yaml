@@ -1,4 +1,4 @@
-postgresql:
+postgres:
   instances: 1
 docmost:
   probes:

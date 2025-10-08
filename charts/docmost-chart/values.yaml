@@ -184,7 +184,7 @@ secret:
 redis:
   enabled: true
   persistence:
-		enabled: false
+    enabled: false
 
 postgres:
   enabled: true
