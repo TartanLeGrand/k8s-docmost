@@ -1,0 +1,12 @@
+postgresql:
+  instances: 1
+docmost:
+  probes:
+    startup:
+      enabled: true
+      failureThreshold: 60
+      periodSeconds: 5
+    liveness:
+      initialDelaySeconds: 60
+    readiness:
+      initialDelaySeconds: 60
