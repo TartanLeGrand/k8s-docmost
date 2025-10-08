@@ -29,7 +29,7 @@ jobs:
         uses: helm/chart-testing-action@v2.7.0
         with:
           version: 3.13.0
-          yamllint_version: 1.33.0
+          yamllint_version: 1.37.1
           yamale_version: 6.0.0
 
       - name: Add Helm Repositories
