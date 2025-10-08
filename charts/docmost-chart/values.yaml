@@ -183,6 +183,8 @@ secret:
 
 redis:
   enabled: true
+  persistence:
+		enabled: false
 
 postgres:
   enabled: true
