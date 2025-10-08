@@ -19,7 +19,8 @@ dependencies:
     repository: https://charts.pascaliske.dev
     version: "2.1.0"
     condition: redis.enabled
-  - name: postgresql
+  - name: cluster
     repository: https://cloudnative-pg.github.io/charts
     version: "0.3.1"
-    condition: postgresql.enabled
+    condition: postgres.enabled
+    alias: postgres

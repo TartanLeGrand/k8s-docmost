@@ -183,3 +183,6 @@ secret:
 
 redis:
   enabled: true
+
+postgres:
+  enabled: true

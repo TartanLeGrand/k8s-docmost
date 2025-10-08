@@ -2,5 +2,8 @@ dependencies:
 - name: redis
   repository: https://charts.pascaliske.dev
   version: 2.1.0
-digest: sha256:1fc87974324c5021c5a19d78c6a766ede84acdc09b17dde7969a4652b5fb41e9
-generated: "2025-10-07T20:54:41.403849839+02:00"
+- name: cluster
+  repository: https://cloudnative-pg.github.io/charts
+  version: 0.3.1
+digest: sha256:46dada27d01393538f7308545b3477d646fd00019dff0da49e2315fc6a4dfe23
+generated: "2025-10-08T15:22:06.225375484+02:00"
