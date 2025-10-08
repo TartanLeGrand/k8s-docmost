@@ -27,11 +27,15 @@ jobs:
 
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.7.0
+        with:
+          version: 3.12.0
+          yamllint_version: 1.33.0
+          yamale_version: 4.0.4
 
       - name: Add Helm Repositories
         run: |
-          helm repo add redis https://charts.pascaliske.dev
-          helm repo add cluster https://cloudnative-pg.github.io/charts
+          helm repo add pascaliske https://charts.pascaliske.dev
+          helm repo add cnpg https://cloudnative-pg.github.io/charts
           helm repo update
 
       - name: Run chart-testing (list-changed)
