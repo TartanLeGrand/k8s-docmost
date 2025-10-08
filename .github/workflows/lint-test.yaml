@@ -61,6 +61,7 @@ jobs:
           helm upgrade --install cnpg \
           --namespace cnpg-system \
           --create-namespace \
+          --set crds.create=true \
           cnpg/cloudnative-pg
 
       - name: Run chart-testing (install)
