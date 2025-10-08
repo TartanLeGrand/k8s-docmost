@@ -1,2 +1,3 @@
 chart-repos:
   - pascaliske=https://charts.pascaliske.dev
+  - cloudnative-pg=https://cloudnative-pg.github.io/charts
