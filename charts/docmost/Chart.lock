@@ -1,0 +1,9 @@
+dependencies:
+- name: redis
+  repository: https://charts.pascaliske.dev
+  version: 2.1.0
+- name: cluster
+  repository: https://cloudnative-pg.github.io/charts
+  version: 0.3.1
+digest: sha256:c0ac91cffa18aa4eaa1630cd26aa6230bea0b308910548a684f77d7c0327f491
+generated: "2025-10-12T23:43:58.619116259+02:00"
