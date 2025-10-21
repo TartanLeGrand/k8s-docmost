@@ -184,7 +184,7 @@ spec:
         {{- if and (eq .Values.docmost.storage.driver "local") .Values.docmost.storage.local.persistence.enabled }}
         - name: storage
           persistentVolumeClaim:
-            claimName: {{- if .Values.docmost.storage.local.persistence.claimName }}{{ .Values.docmost.storage.local.persistence.claimName }}{{- else }}{{ include "docmost.fullname" . }}-storage{{- end }}
+            claimName: {{ include "docmost.fullname" . }}-storage
         {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
