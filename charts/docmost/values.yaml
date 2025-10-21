@@ -190,3 +190,33 @@ docmost:
     pass: "your-smtp-password"
     secure: false
     from: "hello@example.com"
+  debug:
+    enabled: false
+    nodeEnv: "development"
+  # File storage configuration
+  storage:
+    # driver: 'local' or 's3' (default local)
+    driver: "local"
+    # Local storage options (when driver=local)
+    local:
+      # Enable persistent volume claim for local storage
+      persistence:
+        enabled: false
+        # PVC size
+        size: 10Gi
+        # StorageClass name (empty = cluster default)
+        storageClass: ""
+        # Name of the claim; by default the chart fullname + "-storage"
+        claimName: ""
+      # Where to mount inside the container
+      mountPath: "/data/storage"
+    # S3-compatible storage options (when driver=s3)
+    s3:
+      # Name of a Kubernetes Secret containing `accessKey` and `secretKey` keys
+      secretName: ""
+      accessKeyKey: accessKey
+      secretKeyKey: secretKey
+      endpoint: ""
+      region: ""
+      bucket: ""
+      forcePathStyle: true

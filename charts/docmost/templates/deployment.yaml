@@ -44,6 +44,11 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+            {{- if .Values.docmost.debug.enabled }}
+            - name: debug
+              containerPort: {{ .Values.docmost.debug.port }}
+              protocol: TCP
+            {{- end }}
           env:
             - name: APP_URL
               value: {{ .Values.docmost.appUrl }}
@@ -101,6 +106,47 @@ spec:
                   name: {{ include "docmost.fullname" . }}
                   key: smtpSecure
             {{- end }}
+
+            - name: STORAGE_DRIVER
+              value: "{{ .Values.docmost.storage.driver }}"
+
+            {{- if eq .Values.docmost.storage.driver "local" }}
+            - name: STORAGE_PATH
+              value: "{{ .Values.docmost.storage.local.mountPath }}"
+            {{- end }}
+
+            {{- if eq .Values.docmost.storage.driver "s3" }}
+            - name: S3_ENDPOINT
+              value: "{{ .Values.docmost.storage.s3.endpoint }}"
+            - name: S3_REGION
+              value: "{{ .Values.docmost.storage.s3.region }}"
+            - name: S3_BUCKET
+              value: "{{ .Values.docmost.storage.s3.bucket }}"
+            - name: S3_FORCE_PATH_STYLE
+              value: "{{ .Values.docmost.storage.s3.forcePathStyle }}"
+            {{- if .Values.docmost.storage.s3.secretName }}
+            - name: S3_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.docmost.storage.s3.secretName }}
+                  key: {{ .Values.docmost.storage.s3.accessKeyKey }}
+            - name: S3_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.docmost.storage.s3.secretName }}
+                  key: {{ .Values.docmost.storage.s3.secretKeyKey }}
+            {{- end }}
+            {{- end }}
+
+            {{- if and (eq .Values.docmost.storage.driver "local") .Values.docmost.storage.local.persistence.enabled }}
+            - name: STORAGE_PATH
+              value: "{{ .Values.docmost.storage.local.mountPath }}"
+            {{- end }}
+
+            {{- if and .Values.docmost.debug.enabled (ne .Values.docmost.debug.nodeEnv "") }}
+            - name: NODE_ENV
+              value: "{{ .Values.docmost.debug.nodeEnv }}"
+            {{- end }}
             {{- with .Values.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -120,9 +166,21 @@ spec:
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- if and (eq .Values.docmost.storage.driver "local") .Values.docmost.storage.local.persistence.enabled }}
+          {{- if not .Values.volumeMounts }}
+          volumeMounts:
+          {{- end }}
+            - name: storage
+              mountPath: {{ .Values.docmost.storage.local.mountPath }}
+          {{- end }}
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if and (eq .Values.docmost.storage.driver "local") .Values.docmost.storage.local.persistence.enabled }}
+      - name: storage
+        persistentVolumeClaim:
+          claimName: {{- if .Values.docmost.storage.local.persistence.claimName }}{{ .Values.docmost.storage.local.persistence.claimName }}{{- else }}{{ include "docmost.fullname" . }}-storage{{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
