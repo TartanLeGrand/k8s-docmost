@@ -61,39 +61,45 @@ spec:
                   key: uri
             {{- if .Values.docmost.smtp.host }}
             - name: SMTP_HOST
-              secretKeyRef:
-                name: {{ include "docmost.fullname" . }}
-                key: smtpHost
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "docmost.fullname" . }}
+                  key: smtpHost
             {{- end }}
             {{- if .Values.docmost.smtp.port }}
             - name: SMTP_PORT
-              secretKeyRef:
-                name: {{ include "docmost.fullname" . }}
-                key: smtpPort
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "docmost.fullname" . }}
+                  key: smtpPort
             {{- end }}
             {{- if .Values.docmost.smtp.user }}
             - name: SMTP_USER
-              secretKeyRef:
-                name: {{ include "docmost.fullname" . }}
-                key: smtpUser
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "docmost.fullname" . }}
+                  key: smtpUser
             {{- end }}
             {{- if .Values.docmost.smtp.pass }}
             - name: SMTP_PASS
-              secretKeyRef:
-                name: {{ include "docmost.fullname" . }}
-                key: smtpPass
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "docmost.fullname" . }}
+                  key: smtpPass
             {{- end }}
             {{- if .Values.docmost.smtp.from }}
             - name: MAIL_FROM_ADDRESS
-              secretKeyRef:
-                name: {{ include "docmost.fullname" . }}
-                key: smtpFrom
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "docmost.fullname" . }}
+                  key: smtpFrom
             {{- end }}
             {{- if .Values.docmost.smtp.secure }}
             - name: SMTP_SECURE
-              secretKeyRef:
-                name: {{ include "docmost.fullname" . }}
-                key: smtpSecure
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "docmost.fullname" . }}
+                  key: smtpSecure
             {{- end }}
             {{- with .Values.extraEnv }}
             {{- toYaml . | nindent 12 }}
