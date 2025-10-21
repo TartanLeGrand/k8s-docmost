@@ -162,25 +162,30 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.volumeMounts }}
+          {{- if or .Values.volumeMounts (and (eq .Values.docmost.storage.driver "local") .Values.docmost.storage.local.persistence.enabled) }}
           volumeMounts:
+            {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- if and (eq .Values.docmost.storage.driver "local") .Values.docmost.storage.local.persistence.enabled }}
-          {{- if not .Values.volumeMounts }}
-          volumeMounts:
-          {{- end }}
+            {{- end }}
+            {{- if and (eq .Values.docmost.storage.driver "local") .Values.docmost.storage.local.persistence.enabled }}
             - name: storage
               mountPath: {{ .Values.docmost.storage.local.mountPath }}
+            {{- end }}
           {{- end }}
       {{- with .Values.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if and (eq .Values.docmost.storage.driver "local") .Values.docmost.storage.local.persistence.enabled }}
-      - name: storage
-        persistentVolumeClaim:
-          claimName: {{- if .Values.docmost.storage.local.persistence.claimName }}{{ .Values.docmost.storage.local.persistence.claimName }}{{- else }}{{ include "docmost.fullname" . }}-storage{{- end }}
+      {{- if or .Values.volumes (and (eq .Values.docmost.storage.driver "local") .Values.docmost.storage.local.persistence.enabled) }}
+      volumes:
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- if and (eq .Values.docmost.storage.driver "local") .Values.docmost.storage.local.persistence.enabled }}
+        - name: storage
+          persistentVolumeClaim:
+            claimName: {{- if .Values.docmost.storage.local.persistence.claimName }}{{ .Values.docmost.storage.local.persistence.claimName }}{{- else }}{{ include "docmost.fullname" . }}-storage{{- end }}
+        {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
