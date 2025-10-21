@@ -77,7 +77,7 @@ spec:
                 name: {{ include "docmost.fullname" . }}
                 key: smtpUser
             {{- end }}
-            {{- if .Values.docmost.smtp.password }}
+            {{- if .Values.docmost.smtp.pass }}
             - name: SMTP_PASS
               secretKeyRef:
                 name: {{ include "docmost.fullname" . }}
