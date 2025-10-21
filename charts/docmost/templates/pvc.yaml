@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{- if .Values.docmost.storage.local.persistence.claimName }}{{ .Values.docmost.storage.local.persistence.claimName }}{{- else }}{{ include "docmost.fullname" . }}-storage{{- end }}
+  name: {{ include "docmost.fullname" . }}-storage
   labels:
     {{- include "docmost.labels" . | nindent 4 }}
 spec:
@@ -15,4 +15,3 @@ spec:
   storageClassName: {{ .Values.docmost.storage.local.persistence.storageClass | quote }}
   {{- end }}
 {{- end }}
-
