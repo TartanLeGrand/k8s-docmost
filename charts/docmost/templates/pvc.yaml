@@ -1,0 +1,18 @@
+{{- if .Values.docmost.storage.local.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{- if .Values.docmost.storage.local.persistence.claimName }}{{ .Values.docmost.storage.local.persistence.claimName }}{{- else }}{{ include "docmost.fullname" . }}-storage{{- end }}
+  labels:
+    {{- include "docmost.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.docmost.storage.local.persistence.size }}
+  {{- if .Values.docmost.storage.local.persistence.storageClass }}
+  storageClassName: {{ .Values.docmost.storage.local.persistence.storageClass | quote }}
+  {{- end }}
+{{- end }}
+
