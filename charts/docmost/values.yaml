@@ -209,7 +209,7 @@ docmost:
         # Name of the claim; by default the chart fullname + "-storage"
         claimName: ""
       # Where to mount inside the container
-      mountPath: "/data/storage"
+      mountPath: "/app/data/storage"
     # S3-compatible storage options (when driver=s3)
     s3:
       # Name of a Kubernetes Secret containing `accessKey` and `secretKey` keys
