@@ -110,11 +110,6 @@ spec:
             - name: STORAGE_DRIVER
               value: "{{ .Values.docmost.storage.driver }}"
 
-            {{- if eq .Values.docmost.storage.driver "local" }}
-            - name: STORAGE_PATH
-              value: "{{ .Values.docmost.storage.local.mountPath }}"
-            {{- end }}
-
             {{- if eq .Values.docmost.storage.driver "s3" }}
             - name: S3_ENDPOINT
               value: "{{ .Values.docmost.storage.s3.endpoint }}"
