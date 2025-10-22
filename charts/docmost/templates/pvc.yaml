@@ -11,7 +11,12 @@ spec:
   resources:
     requests:
       storage: {{ .Values.docmost.storage.local.persistence.size }}
-  {{- if .Values.docmost.storage.local.persistence.storageClass }}
+  {{- /* Determine storageClassName: prefer existing PVC's storageClassName (so upgrades don't try to change immutable field), else use provided value if set. */}}
+  {{- $pvcName := printf "%s-storage" (include "docmost.fullname" .) }}
+  {{- $existing := lookup "v1" "PersistentVolumeClaim" .Release.Namespace $pvcName }}
+  {{- if and $existing $existing.spec.storageClassName }}
+  storageClassName: {{ $existing.spec.storageClassName | quote }}
+  {{- else if .Values.docmost.storage.local.persistence.storageClass }}
   storageClassName: {{ .Values.docmost.storage.local.persistence.storageClass | quote }}
   {{- end }}
 {{- end }}
