@@ -64,10 +64,6 @@ spec:
                 secretKeyRef:
                   name: {{ include "cluster.fullname" $.Subcharts.postgresql }}-app
                   key: uri
-            {{- if .Values.docmost.mail.driver }}
-            - name: MAILER_DRIVER
-              value: "{{ .Values.docmost.mail.driver }}"
-            {{- end }}
             {{- if .Values.docmost.smtp.host }}
             - name: SMTP_HOST
               valueFrom:
@@ -95,6 +91,10 @@ spec:
                 secretKeyRef:
                   name: {{ include "docmost.fullname" . }}
                   key: smtpPass
+            {{- end }}
+            {{- if .Values.docmost.mail.driver }}
+            - name: MAIL_DRIVER
+              value: "{{ .Values.docmost.mail.driver }}"
             {{- end }}
             {{- if .Values.docmost.mail.from }}
             - name: MAIL_FROM_ADDRESS
