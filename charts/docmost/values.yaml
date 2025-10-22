@@ -204,7 +204,10 @@ docmost:
     local:
       # Enable persistent volume claim for local storage
       persistence:
-        enabled: false
+        # Default to true so local storage is used when S3 is not configured.
+        # If you explicitly set `docmost.storage.driver: "s3"` and provide S3 config,
+        # the chart will use S3 instead.
+        enabled: true
         # PVC size
         size: 10Gi
         # StorageClass name (empty = cluster default)

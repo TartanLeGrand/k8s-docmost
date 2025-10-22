@@ -6,17 +6,31 @@ metadata:
   labels:
     {{- include "docmost.labels" . | nindent 4 }}
 spec:
+  {{- $pvcName := printf "%s-storage" (include "docmost.fullname" .) }}
+  {{- $existing := lookup "v1" "PersistentVolumeClaim" .Release.Namespace $pvcName }}
+  {{- /* Preserve accessModes from existing PVC if present to avoid immutable-field changes */}}
+  {{- if and $existing $existing.spec.accessModes }}
+  accessModes:
+  {{- range $existing.spec.accessModes }}
+    - {{ . }}
+  {{- end }}
+  {{- else }}
   accessModes:
     - ReadWriteOnce
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.docmost.storage.local.persistence.size }}
-  {{- /* Determine storageClassName: prefer existing PVC's storageClassName (so upgrades don't try to change immutable field), else use provided value if set. */}}
-  {{- $pvcName := printf "%s-storage" (include "docmost.fullname" .) }}
-  {{- $existing := lookup "v1" "PersistentVolumeClaim" .Release.Namespace $pvcName }}
+  {{- /* storageClassName: copy from existing if present; only use configured storageClass when creating a new PVC (i.e. when $existing is empty) */}}
   {{- if and $existing $existing.spec.storageClassName }}
   storageClassName: {{ $existing.spec.storageClassName | quote }}
-  {{- else if .Values.docmost.storage.local.persistence.storageClass }}
+  {{- else if not $existing and .Values.docmost.storage.local.persistence.storageClass }}
   storageClassName: {{ .Values.docmost.storage.local.persistence.storageClass | quote }}
+  {{- end }}
+  {{- /* volumeMode: preserve existing if present, otherwise allow value from chart values */}}
+  {{- if and $existing $existing.spec.volumeMode }}
+  volumeMode: {{ $existing.spec.volumeMode | quote }}
+  {{- else if .Values.docmost.storage.local.persistence.volumeMode }}
+  volumeMode: {{ .Values.docmost.storage.local.persistence.volumeMode | quote }}
   {{- end }}
 {{- end }}
