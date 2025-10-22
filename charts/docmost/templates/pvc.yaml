@@ -33,6 +33,24 @@ spec:
   {{- else if .Values.docmost.storage.local.persistence.volumeMode }}
   volumeMode: {{ .Values.docmost.storage.local.persistence.volumeMode | quote }}
   {{- end }}
+  {{- /* selector: preserve existing if present */}}
+  {{- if and $existing $existing.spec.selector }}
+  selector:
+    {{- toYaml $existing.spec.selector | nindent 4 }}
+  {{- end }}
+  {{- /* dataSource/dataSourceRef: preserve existing if present */}}
+  {{- if and $existing $existing.spec.dataSource }}
+  dataSource:
+    {{- toYaml $existing.spec.dataSource | nindent 4 }}
+  {{- end }}
+  {{- if and $existing $existing.spec.dataSourceRef }}
+  dataSourceRef:
+    {{- toYaml $existing.spec.dataSourceRef | nindent 4 }}
+  {{- end }}
+  {{- /* volumeAttributesClassName: preserve existing if present (k8s >=1.27) */}}
+  {{- if and $existing $existing.spec.volumeAttributesClassName }}
+  volumeAttributesClassName: {{ $existing.spec.volumeAttributesClassName | quote }}
+  {{- end }}
   {{- /* volumeName: preserve existing to avoid clearing an immutable bound PV reference */}}
   {{- if and $existing $existing.spec.volumeName }}
   volumeName: {{ $existing.spec.volumeName | quote }}
