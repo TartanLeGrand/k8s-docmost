@@ -108,9 +108,9 @@ spec:
             {{- end }}
 
             - name: STORAGE_DRIVER
-              value: "{{ .Values.docmost.storage.driver }}"
+              value: "{{ include "docmost.storageDriver" . }}"
 
-            {{- if eq .Values.docmost.storage.driver "s3" }}
+            {{- if eq (include "docmost.storageDriver" .) "s3" }}
             - name: S3_ENDPOINT
               value: "{{ .Values.docmost.storage.s3.endpoint }}"
             - name: S3_REGION
@@ -133,7 +133,7 @@ spec:
             {{- end }}
             {{- end }}
 
-            {{- if and (eq .Values.docmost.storage.driver "local") .Values.docmost.storage.local.persistence.enabled }}
+            {{- if and (eq (include "docmost.storageDriver" .) "local") .Values.docmost.storage.local.persistence.enabled }}
             - name: STORAGE_PATH
               value: "{{ .Values.docmost.storage.local.mountPath }}"
             {{- end }}
@@ -157,29 +157,34 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if or .Values.volumeMounts (and (eq .Values.docmost.storage.driver "local") .Values.docmost.storage.local.persistence.enabled) }}
+          {{- /* Volume mounts: include any user-provided mounts, and always mount the local storage path when storageDriver=local */}}
+          {{- if or .Values.volumeMounts (eq (include "docmost.storageDriver" .) "local") }}
           volumeMounts:
             {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-            {{- if and (eq .Values.docmost.storage.driver "local") .Values.docmost.storage.local.persistence.enabled }}
+            {{- if eq (include "docmost.storageDriver" .) "local" }}
             - name: storage
-              mountPath: {{ .Values.docmost.storage.local.mountPath }}
+              mountPath: "{{ .Values.docmost.storage.local.mountPath }}"
             {{- end }}
           {{- end }}
-      {{- with .Values.volumes }}
-      volumes:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- if or .Values.volumes (and (eq .Values.docmost.storage.driver "local") .Values.docmost.storage.local.persistence.enabled) }}
+      {{- /* Volumes: include any user-provided volumes, and when storageDriver=local create either a PVC or a hostPath */}}
+      {{- if or .Values.volumes (eq (include "docmost.storageDriver" .) "local") }}
       volumes:
         {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-        {{- if and (eq .Values.docmost.storage.driver "local") .Values.docmost.storage.local.persistence.enabled }}
+        {{- if eq (include "docmost.storageDriver" .) "local" }}
+          {{- if .Values.docmost.storage.local.persistence.enabled }}
         - name: storage
           persistentVolumeClaim:
             claimName: {{ include "docmost.fullname" . }}-storage
+          {{- else }}
+        - name: storage
+          hostPath:
+            path: "{{ .Values.docmost.storage.local.mountPath }}"
+            type: DirectoryOrCreate
+          {{- end }}
         {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}

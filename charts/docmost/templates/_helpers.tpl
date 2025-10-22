@@ -60,3 +60,15 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Determine storage driver: prefer s3 when the user configured common S3 fields, otherwise use configured driver (default local)
+*/}}
+{{- define "docmost.storageDriver" -}}
+{{- $driver := default "local" .Values.docmost.storage.driver -}}
+{{- if or (ne (default "" .Values.docmost.storage.s3.bucket) "") (ne (default "" .Values.docmost.storage.s3.secretName) "") (ne (default "" .Values.docmost.storage.s3.endpoint) "") -}}
+{{- "s3" -}}
+{{- else -}}
+{{- $driver -}}
+{{- end -}}
+{{- end }}
