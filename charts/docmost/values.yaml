@@ -38,16 +38,32 @@ podAnnotations: {}
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 podLabels: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext:
+  fsGroup: 1000
+  fsGroupChangePolicy: OnRootMismatch
+  # Add extra fields if needed, e.g. supplementalGroups
+  # supplementalGroups: [1000]
 
-securityContext: {}
+securityContext:
+  # Ensure the main container runs as a non-root user that owns the app files
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
   # capabilities:
   #   drop:
   #   - ALL
   # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+
+# Init container to fix volume permissions when using local storage
+volumePermissions:
+  enabled: true
+  image:
+    repository: busybox
+    tag: "1.36.1"
+    pullPolicy: IfNotPresent
+  # Run the init container as root to be able to chown/chmod the mounted volume
+  securityContext:
+    runAsUser: 0
 
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 service:

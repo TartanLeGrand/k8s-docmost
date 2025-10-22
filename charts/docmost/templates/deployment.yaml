@@ -32,6 +32,26 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- /* Ensure local storage volume is writable by the runtime user before starting the app */}}
+      {{- if and (eq (include "docmost.storageDriver" .) "local") .Values.volumePermissions.enabled }}
+      initContainers:
+        - name: volume-permissions
+          image: "{{ .Values.volumePermissions.image.repository }}:{{ .Values.volumePermissions.image.tag }}"
+          imagePullPolicy: {{ .Values.volumePermissions.image.pullPolicy }}
+          command: ["sh","-c"]
+          args:
+            - >-
+              mkdir -p "{{ .Values.docmost.storage.local.mountPath }}" &&
+              chown -R {{ default 1000 .Values.securityContext.runAsUser }}:{{ default 1000 .Values.securityContext.runAsGroup }} "{{ .Values.docmost.storage.local.mountPath }}" &&
+              chmod -R g+rwX,u+rwX "{{ .Values.docmost.storage.local.mountPath }}"
+          {{- with .Values.volumePermissions.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: storage
+              mountPath: "{{ .Values.docmost.storage.local.mountPath }}"
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           {{- with .Values.securityContext }}
