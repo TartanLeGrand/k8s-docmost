@@ -182,6 +182,8 @@ docmost:
   # The URL where your Docmost instance will be accessible. This is used for generating links in emails and other notifications.
   appUrl: "http://127.0.0.1:3000"
 
+  mail:
+    driver: "smtp" # Options: "smtp", "sendmail", "log", or null to disable email sending
   # SMTP configuration for sending emails. Update these settings with your SMTP server details.
   smtp:
     host: "smtp.example.com"
