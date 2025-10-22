@@ -1,4 +1,4 @@
-{{- if .Values.docmost.storage.local.persistence.enabled }}
+{{- if and (eq (include "docmost.storageDriver" .) "local") .Values.docmost.storage.local.persistence.enabled (eq (default "" .Values.docmost.storage.local.persistence.claimName) "") }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -32,5 +32,9 @@ spec:
   volumeMode: {{ $existing.spec.volumeMode | quote }}
   {{- else if .Values.docmost.storage.local.persistence.volumeMode }}
   volumeMode: {{ .Values.docmost.storage.local.persistence.volumeMode | quote }}
+  {{- end }}
+  {{- /* volumeName: preserve existing to avoid clearing an immutable bound PV reference */}}
+  {{- if and $existing $existing.spec.volumeName }}
+  volumeName: {{ $existing.spec.volumeName | quote }}
   {{- end }}
 {{- end }}
