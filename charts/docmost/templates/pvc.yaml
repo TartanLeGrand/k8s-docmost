@@ -24,7 +24,7 @@ spec:
   {{- /* storageClassName: copy from existing if present; only use configured storageClass when creating a new PVC (i.e. when $existing is empty) */}}
   {{- if and $existing $existing.spec.storageClassName }}
   storageClassName: {{ $existing.spec.storageClassName | quote }}
-  {{- else if not $existing and .Values.docmost.storage.local.persistence.storageClass }}
+  {{- else if and (not $existing) .Values.docmost.storage.local.persistence.storageClass }}
   storageClassName: {{ .Values.docmost.storage.local.persistence.storageClass | quote }}
   {{- end }}
   {{- /* volumeMode: preserve existing if present, otherwise allow value from chart values */}}
