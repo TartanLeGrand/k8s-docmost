@@ -184,6 +184,8 @@ docmost:
 
   mail:
     driver: "smtp" # Options: "smtp", "sendmail", "log", or null to disable email sending
+    name: "Docmost"
+    from: "hello@example.com"
   # SMTP configuration for sending emails. Update these settings with your SMTP server details.
   smtp:
     host: "smtp.example.com"
@@ -191,7 +193,6 @@ docmost:
     user: "your-smtp-username"
     pass: "your-smtp-password"
     secure: false
-    from: "hello@example.com"
   debug:
     enabled: false
     nodeEnv: "development"

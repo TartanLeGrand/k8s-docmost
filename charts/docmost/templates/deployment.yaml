@@ -96,12 +96,13 @@ spec:
                   name: {{ include "docmost.fullname" . }}
                   key: smtpPass
             {{- end }}
-            {{- if .Values.docmost.smtp.from }}
+            {{- if .Values.docmost.mail.from }}
             - name: MAIL_FROM_ADDRESS
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "docmost.fullname" . }}
-                  key: smtpFrom
+              value: {{ .Values.docmost.mail.from }}
+            {{- end }}
+            {{- if .Values.docmost.mail.name }}
+            - name: MAIL_FROM_NAME
+              value: {{ .Values.docmost.mail.name }}
             {{- end }}
             {{- if .Values.docmost.smtp.secure }}
             - name: SMTP_SECURE
